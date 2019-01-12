@@ -13,6 +13,8 @@ import {
   DefaultLinkFactory
 } from 'storm-react-diagrams';
 
+import Menu from './components/menu';
+import Options from './components/options';
 import logo from './logo.svg';
 import 'storm-react-diagrams/dist/style.min.css';
 import './App.css';
@@ -39,8 +41,11 @@ class App extends Component {
   render() {
     return (
       <div className="App">
-          
+        <Menu />          
+        <div className="app-body">
           <DiagramWidget className="srd-demo-canvas" diagramEngine={this.diagramEngine} />
+          <Options />
+        </div>
       </div>
     );
   }
