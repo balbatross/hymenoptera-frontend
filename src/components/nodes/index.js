@@ -18,7 +18,10 @@ import './index.css'
       }
     }
 render() {
-      return(<div className='node default' >  
+      return(<div className='node default' draggable={true} onDragStart={event => {
+  console.log("START")
+    event.dataTransfer.setData('storm-diagram-node', JSON.stringify(this.state.node))
+      }}>  
       <div className='node-title'>
         {this.state.node.title}
       </div>
