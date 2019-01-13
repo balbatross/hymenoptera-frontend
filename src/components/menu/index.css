@@ -2,4 +2,8 @@
   display: flex;
   flex: 0.18;
   background: white;
+  justify-content:center;
 }
+
+.flow-menu >ul{list-style:none;padding:0;}
+.flow-menu >ul>li{margin-top:5px;}

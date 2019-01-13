@@ -1,7 +1,7 @@
 import React, {
   Component
 } from 'react';
-
+import Node from '../nodes'
 import './index.css'
 
 export default class Menu extends Component {
@@ -14,10 +14,10 @@ export default class Menu extends Component {
       <div className="flow-menu">
         <ul>
           <li>
-            HTTP IN
+            <Node node={{title: 'HTTP', description: 'GET'}}/>
           </li>
           <li>
-            Mongo find
+          <Node node={{title:'Mongo', description:'Find'}}/>
           </li>
         </ul>
       </div>
