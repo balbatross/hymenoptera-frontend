@@ -8,8 +8,8 @@ export default class Options extends Component {
   constructor(props){
     super(props);
     this.state = {
+      options: {},
       ...props,
-      options: {}
     }
   }
 
@@ -27,6 +27,7 @@ export default class Options extends Component {
 
   componentWillReceiveProps(newProps){
     if(this.props !== newProps){
+      console.log(newProps.selected.id)
       this.setState({
         ...newProps
       })
@@ -34,17 +35,17 @@ export default class Options extends Component {
   }
 
   _handleOptionChange(id, opts){
-    let options = this.state.options
-    options[id] = opts;
-    this.setState({options: options})
+    if(this.props.onChange){
+      this.props.onChange(id, opts);
+    }
   }
 
   _renderOptions(){
     if(this.state.selected.config != null){
       let id = this.state.selected.id;
       let options = Object.keys(this.state.selected.config.params)
-      let values = this.state.options[id]
-      if(!values){
+      let values = this.state.options
+      if(Object.keys(values) == 0){
         values = this.state.selected.config.params
       }
 

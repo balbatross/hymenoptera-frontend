@@ -20,20 +20,20 @@ export default class Menu extends Component {
 
   run(){
 
-  let serial = this.state.model 
+    let serial = this.state.model 
 
-  let links = serial.links;
-  let nodes = serial.nodes;
-  let linked = []
-  for(var i =0; i < links.length; i++){
-    var link = links[i];
+    let links = serial.links;
+    let nodes = serial.nodes;
+    let linked = []
+    for(var i =0; i < links.length; i++){
+      var link = links[i];
 
-    let src = nodes.filter((a) => a.id == link.source)[0]
-    let dst = nodes.filter((a) => a.id ==link.target)[0]
-    linked.push({src: src, dst: dst})
+      let src = nodes.filter((a) => a.id == link.source)[0]
+      let dst = nodes.filter((a) => a.id ==link.target)[0]
+      linked.push({src: src, dst: dst})
 
-  }
-  console.log(linked)
+    }
+    console.log(linked)
 
 
 
@@ -42,13 +42,16 @@ export default class Menu extends Component {
   render(){
     return(
       <div className="flow-menu">
-        <div onClick={this.run.bind(this)}>Run</div>
+        <div onClick={this.run.bind(this)}> |> Run</div>
         <ul>
           <li>
             <Node node={{title: 'HTTP', description: 'GET', config: {type: 'input', params: {route: "string", method: "string"} }}}/>
           </li>
           <li>
           <Node node={{title:'Mongo', description:'Find', config: {type: 'process', params: {coll: "string", query: "object"}} }}/>
+          </li>
+          <li>
+            <Node node={{title: 'Logger', description: 'console.log', config: {type: 'process', params: {msg: "Hit endpoint"}}}}/>
           </li>
         </ul>
       </div>

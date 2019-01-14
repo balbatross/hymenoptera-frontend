@@ -21,7 +21,6 @@ class App extends Component {
         <Menu model={this.state.diagram} />          
         <div className="app-body">
           <Editor onSelect={(n) => this.setState({selectedNode: n})} onChange={(model) => this.setState({diagram: model})}/> 
-          <Options selected={this.state.selectedNode}/>
         </div>
       </div>
     );

@@ -2,7 +2,8 @@
   display: flex;
   flex: 0.13;
   background: white;
-  justify-content:center;
+  align-items:center;
+  flex-direction: column;
 }
 
 .flow-menu >ul{list-style:none;padding:0;}

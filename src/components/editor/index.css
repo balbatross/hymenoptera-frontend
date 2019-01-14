@@ -1,4 +1,15 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
 .editor-container{
   display: flex;
   flex: 1;
+}
+
+.editor-toolbar{
+  background: purple;
+  color: white;
+  padding: 10px;
 }

@@ -12,7 +12,7 @@ import {
   DefaultLinKModel,
   DefaultLinkFactory
 } from 'storm-react-diagrams';
-
+import Options from '../options';
 import uuid from 'uuid';
 
 import './index.css';
@@ -22,7 +22,8 @@ export default class Editor extends Component {
     super(props);
 
     this.state = {
-      selected: null
+      selected: {},
+      options: {}
     }
 
     this.diagramEngine = new DiagramEngine()
@@ -33,12 +34,15 @@ export default class Editor extends Component {
 
   addNode(node, pos){
     let name = node.title;
-    if(!node.id){
-      node.id = uuid.v4();
-    }
     let _node = new DefaultNodeModel(name, "rgb(195,255,0)")
-    let type = node.config.type
 
+    if(!_node.id){
+      node.id = uuid.v4();
+    }else{
+      node.id = _node.id
+    }
+    let type = node.config.type
+    _node.extras = {config: node.config, opts: {}}
     switch(type){
       case 'input':
         _node.addOutPort("Trigger")
@@ -68,9 +72,45 @@ export default class Editor extends Component {
     this.forceUpdate()
   }
 
+  _handleOptionChange(id, opts){
+    let options = this.state.options
+    options[id] = opts;
+    this.setState({options: options})
+
+
+    let node = this.diagramEngine.getDiagramModel().getNode(id)
+    let extras = node.extras;
+    node.extras = {...extras, opts: opts}
+
+//    node.extras = {opts: opts}
+  }
+
+  _getFlow(){
+    let d = this.diagramEngine.getDiagramModel().serializeDiagram()
+    let nodes = d.nodes.map((x) => {
+        return {
+          id: x.id,
+          config: x.extras.config,
+          opts: x.extras.opts,
+          ports: x.ports
+        }
+    });
+    let links = d.links.map((x) => {
+      return {
+        id: x.id,
+        src: x.source,
+        dst: x.target,
+        srcPort: x.sourcePort,
+        dstPort: x.targetPort
+      }
+    })
+    console.log(nodes);
+    console.log(links)
+  }
+
   render(){
     return (
-
+      <div className="editor">
         <div className="editor-container" onDragOver={event => { 
           event.preventDefault()
         }} onDrop={event => {
@@ -84,6 +124,11 @@ export default class Editor extends Component {
           <DiagramWidget className="srd-demo-canvas" diagramEngine={this.diagramEngine} />
 
         </div>
+        <div className="editor-toolbar" onClick={this._getFlow.bind(this)}>
+          <div>RUN</div>
+        </div>
+        <Options selected={this.state.selected} options={this.state.options[this.state.selected.id] || {}} onChange={this._handleOptionChange.bind(this)}/>
+      </div>
     );
   }
 }
