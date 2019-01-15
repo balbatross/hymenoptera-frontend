@@ -42,7 +42,8 @@ export default class Editor extends Component {
       node.id = _node.id
     }
     let type = node.config.type
-    _node.extras = {config: node.config, opts: {}}
+   
+    _node.extras = {config: node.config, type: node.title, key: node.description, opts: {}}
     switch(type){
       case 'input':
         _node.addOutPort("Trigger")
@@ -85,13 +86,30 @@ export default class Editor extends Component {
 //    node.extras = {opts: opts}
   }
 
+  testFlow(flow){
+    return fetch('http://localhost:8000/api/run', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+
+      },
+      body: JSON.stringify({
+        flow: flow
+      })
+    }).then((r) => {
+      return r.json()
+    });
+  }
+
   _getFlow(){
     let d = this.diagramEngine.getDiagramModel().serializeDiagram()
     let nodes = d.nodes.map((x) => {
         return {
           id: x.id,
+          type: x.extras.type,
           config: x.extras.config,
-          opts: x.extras.opts,
+          params: x.extras.opts,
+          func: x.extras.key,
           ports: x.ports
         }
     });
@@ -104,6 +122,13 @@ export default class Editor extends Component {
         dstPort: x.targetPort
       }
     })
+
+    let flow = {
+      nodes: nodes,
+      links: links
+    }
+
+    this.testFlow(flow)
     console.log(nodes);
     console.log(links)
   }

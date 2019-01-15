@@ -8,14 +8,29 @@ export default class Menu extends Component {
   constructor(props){
     super(props);
     this.state = {
-      ...props
+      ...props,
+      modules: []
     }
+  }
+
+  componentDidMount(){
+    this.getModules().then((modules) => {
+      this.setState({
+        modules: modules
+      })
+    })
   }
 
   componentWillReceiveProps(newProps){
     this.setState({
       ...newProps
     })  
+  }
+
+  getModules(){
+    return fetch('http://localhost:8000/api/modules').then((r) => {
+      return r.json()
+    })
   }
 
   run(){
@@ -38,21 +53,34 @@ export default class Menu extends Component {
 
 
   }
+  
+  _renderItems(){
+
+    let modules = []
+    console.log(this.state.modules)
+    this.state.modules.map((x) => {
+      x.modules.map((mod) => {
+        mod.package = x.id;
+        modules.push(mod)
+        console.log(mod)
+      })
+    })
+
+    return modules.map((m) => {
+      return (
+        <li>
+          <Node node={{title: m.package, description: m.key, config: m.config}} />
+        </li>
+      );
+    })
+  }
 
   render(){
     return(
       <div className="flow-menu">
         <div onClick={this.run.bind(this)}> |> Run</div>
         <ul>
-          <li>
-            <Node node={{title: 'HTTP', description: 'GET', config: {type: 'input', params: {route: "string", method: "string"} }}}/>
-          </li>
-          <li>
-          <Node node={{title:'Mongo', description:'Find', config: {type: 'process', params: {coll: "string", query: "object"}} }}/>
-          </li>
-          <li>
-            <Node node={{title: 'Logger', description: 'console.log', config: {type: 'process', params: {msg: "Hit endpoint"}}}}/>
-          </li>
+          {this._renderItems()}
         </ul>
       </div>
     );  
