@@ -1,8 +1,33 @@
+.menu-module{
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.menu-module__header{
+  box-shadow: -5px 10px 10px 0px #dfdfdf; 
+  padding: 5px;
+  background: purple;
+  color: white;
+  font-size: 17px;
+}
+
+.menu-module__nodes{
+  padding: 5px;
+  background: #dfdfdf;
+}
+
+.menu-module__nodes > div{
+  padding-bottom: 10px;
+  cursor: pointer;
+}
+
 .flow-menu{
   display: flex;
   flex: 0.13;
   background: white;
-  align-items:center;
+  padding-left: 5px;
+  padding-right: 5px;
   flex-direction: column;
 }
 

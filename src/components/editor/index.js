@@ -35,15 +35,14 @@ export default class Editor extends Component {
   addNode(node, pos){
     let name = node.title;
     let _node = new DefaultNodeModel(name, "rgb(195,255,0)")
-
     if(!_node.id){
       node.id = uuid.v4();
     }else{
       node.id = _node.id
     }
     let type = node.config.type
-   
-    _node.extras = {config: node.config, type: node.title, key: node.description, opts: {}}
+    console.log(node) 
+    _node.extras = {config: node.config, type: node.package, key: node.description, opts: {}}
     switch(type){
       case 'input':
         _node.addOutPort("Trigger")
@@ -133,6 +132,17 @@ export default class Editor extends Component {
     console.log(links)
   }
 
+  stopFlow(){
+    return fetch('http://localhost:8000/api/stop', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then((r) => {
+      return r.json()
+    })
+  }
+
   render(){
     return (
       <div className="editor">
@@ -149,8 +159,9 @@ export default class Editor extends Component {
           <DiagramWidget className="srd-demo-canvas" diagramEngine={this.diagramEngine} />
 
         </div>
-        <div className="editor-toolbar" onClick={this._getFlow.bind(this)}>
-          <div>RUN</div>
+        <div className="editor-toolbar" >
+          <div className="run-action" onClick={this._getFlow.bind(this)}><img src={require('../../assets/running-man.svg')}/>RUN</div>
+          <div className="stop-action" onClick={this.stopFlow.bind(this)}>Stop</div>
         </div>
         <Options selected={this.state.selected} options={this.state.options[this.state.selected.id] || {}} onChange={this._handleOptionChange.bind(this)}/>
       </div>

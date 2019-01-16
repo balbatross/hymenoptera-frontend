@@ -1,3 +1,25 @@
+.run-action img{
+  width: 40px;
+  margin-right: 10px;
+}
+
+.run-action{
+  display: flex;
+  width: 100px;
+  font-weight: bold;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: -5px 5px 5px 0 #dfdfdf;
+}
+
+.srd-default-node{
+  font-size: 17px !important;
+}
+
+.srd-node--selected{
+  border-width: 4px !important;
+}
+
 .editor {
   display: flex;
   flex-direction: column;
