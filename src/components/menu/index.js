@@ -1,7 +1,19 @@
 import React, {
   Component
 } from 'react';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import TextField from '@material-ui/core/TextField';
+import AppBar from '@material-ui/core/AppBar';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import Node from '../nodes'
+
 import './index.css'
 
 export default class Menu extends Component {
@@ -9,16 +21,27 @@ export default class Menu extends Component {
     super(props);
     this.state = {
       ...props,
-      modules: []
+      selectedOption: 0,
+      menu: ["Nodes", "Flows"],
+      modules: [],
+      flows: [],
+      creatingFlow: false
     }
   }
 
   componentDidMount(){
+  
+    this.getFlows().then((flows) => {
+      this.setState({
+        flows: flows
+      })
+    })
     this.getModules().then((modules) => {
       this.setState({
         modules: modules
       })
     })
+
   }
 
   componentWillReceiveProps(newProps){
@@ -29,6 +52,28 @@ export default class Menu extends Component {
 
   getModules(){
     return fetch('http://localhost:8000/api/modules').then((r) => {
+      return r.json()
+    })
+  }
+
+  getFlows(){
+    return fetch('http://localhost:8000/api/flows').then((r) => {
+      return r.json()
+    })
+  }
+
+  createFlow(name){
+    return fetch('http://localhost:8000/api/flows', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        flow: {
+          name: name
+        }
+      })
+    }).then((r) => {
       return r.json()
     })
   }
@@ -53,7 +98,82 @@ export default class Menu extends Component {
 
 
   }
-  
+
+  _selectMenuOption(event, value){
+    console.log(value)
+    this.setState({selectedOption: value})
+  }
+
+  _renderMenu(){
+
+    return (
+        <AppBar position="static">
+          <Tabs value={this.state.selectedOption} onChange={this._selectMenuOption.bind(this)}>
+            {this.state.menu.map((x) => {
+                return (
+                  <Tab label={x} />
+                )
+            })}
+          </Tabs>
+        </AppBar>
+    );
+  }
+
+  _renderNodes(m){
+    return this._renderItems()
+  }
+
+  _createFlow(){
+    this.createFlow(this.state.modalFlowName).then(() => {
+      this.getFlows().then((r) => {
+        this.setState({flows: r, creatingFlow: false})
+      })
+    })
+    console.log(this.state.modalFlowName)
+  }
+
+  _selectFlow(flow){
+
+  }
+
+  _renderFlows(){
+    let flows = this.state.flows.map((flow) => {
+      return (
+        <ListItem button onClick={this._selectFlow.bind(this, flow)}>
+          {flow.name}
+        </ListItem>
+      );
+    })
+    return (
+      <div className="flows-menu">
+        <div className="flows-menu__flow">
+          <List>
+            {flows}
+          </List>
+        </div>
+        <div className="flows-menu__add">
+          <Button variant="contained" color="primary" onClick={() => this.setState({creatingFlow: true})}>
+            Add
+          </Button>
+        </div>
+        <Dialog open={this.state.creatingFlow}>
+          <DialogTitle>Create new flow</DialogTitle>
+          <DialogContent>
+            <TextField autoFocus margin="dense" label="Flow name" type="text" fullWidth onChange={(e) => this.setState({modalFlowName: e.target.value})}/>
+          </DialogContent>
+          <DialogActions>
+            <Button color="primary" onClick={() => this.setState({creatingFlow: false})}>
+              Cancel
+            </Button>
+            <Button color="primary" variant="contained" onClick={this._createFlow.bind(this)}>
+              Create 
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </div>
+    );
+  }
+
   _renderItems(){
 
     let modules = []
@@ -98,10 +218,15 @@ export default class Menu extends Component {
   render(){
     return(
       <div className="flow-menu">
-        <div onClick={this.run.bind(this)}> |> Run</div>
+        <div style={{display: 'flex', justifyContent: 'space-around', paddingTop: '5px'}}>
+          {this._renderMenu()}
+        </div>
+
+        {(this.state.selectedOption == 0) ? (
         <ul>
           {this._renderItems()}
         </ul>
+        ) : this._renderFlows()}
       </div>
     );  
   }

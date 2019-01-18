@@ -23,7 +23,8 @@ export default class Editor extends Component {
 
     this.state = {
       selected: {},
-      options: {}
+      options: {},
+      flow: {}
     }
 
     this.diagramEngine = new DiagramEngine()
@@ -143,9 +144,22 @@ export default class Editor extends Component {
     })
   }
 
+  _renderTitle(){
+    if(this.state.flow.name){
+      return (
+        <div>
+          <h4>{this.state.flow.name}</h4>
+        </div>
+      );
+    }else{
+      return null;
+    } 
+  }
+
   render(){
     return (
       <div className="editor">
+        {this._renderTitle()}
         <div className="editor-container" onDragOver={event => { 
           event.preventDefault()
         }} onDrop={event => {

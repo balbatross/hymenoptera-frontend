@@ -44,7 +44,7 @@ export default class Options extends Component {
     if(this.state.selected.config != null){
       let id = this.state.selected.id;
       let options = Object.keys(this.state.selected.config.params)
-      let values = this.state.options
+      let values = this.state.selected.config.params
       if(Object.keys(values) == 0){
         values = this.state.selected.config.params
       }
@@ -52,7 +52,7 @@ export default class Options extends Component {
       return (
         <div>
           <h4>{this.state.selected.title}</h4>
-          <JSONInput id='options' placeholder={values} onChange={(e) => this._handleOptionChange(id, e.jsObject)} locale={locale} height='250px' /> 
+          <JSONInput confirmGood={false} waitAfterKeyPress={10 * 1000} id='options' placeholder={values} onChange={(e) => this._handleOptionChange(id, e.jsObject)} locale={locale} height='250px' /> 
         </div>
       );
     }else{

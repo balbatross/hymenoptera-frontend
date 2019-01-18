@@ -19,6 +19,13 @@ html, body, #root, .App{
 .App {
   display: flex;
   flex: 1;
+  flex-direction: column;
+}
+
+.Main-App{
+  flex-direction: row;
+  flex: 1;
+  display: flex;
 }
 
 .App-logo {
