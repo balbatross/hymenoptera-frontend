@@ -1,3 +1,19 @@
+.connections-editor__controls {
+  display: flex;
+}
+
+.connections-editor{
+  width: 250px;
+  margin-left: 10px;
+}
+
+.connections-editor > h4{
+  margin: 0;
+}
+
+.flow-options{
+  display: flex;
+}
 .node-option-item{
   display: flex;
 }

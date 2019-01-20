@@ -13,10 +13,13 @@ import Tab from '@material-ui/core/Tab';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Node from '../nodes'
+import { connect } from 'react-redux';
+import {bindActionCreators} from 'redux';
+import * as editorActions from '../../actions/editorActions';
 
 import './index.css'
 
-export default class Menu extends Component {
+class Menu extends Component {
   constructor(props){
     super(props);
     this.state = {
@@ -133,7 +136,8 @@ export default class Menu extends Component {
   }
 
   _selectFlow(flow){
-
+    this.props.editorActions.editFlow(flow)
+    console.log(flow)
   }
 
   _renderFlows(){
@@ -197,11 +201,10 @@ export default class Menu extends Component {
               {m.modules.map((x) => {
                 return (
                   <div draggable={true}  onDragStart={event => {
-                    console.log("START")
                     let mod = {
-                      package: m.id,
-                      title: m.name + ": " + x.key,
-                      description: x.key,
+                      module_name: m.id,
+                      label: m.name + ": " + x.key,
+                      delegator: x.key,
                       config: x.config
                     }
                     event.dataTransfer.setData('storm-diagram-node', JSON.stringify(mod))
@@ -231,3 +234,17 @@ export default class Menu extends Component {
     );  
   }
 }
+
+function mapStateToProps(state){
+  return {
+    
+  }
+}
+
+
+function mapDispatchToProps(dispatch){
+  return {
+    editorActions: bindActionCreators(editorActions, dispatch)
+  }
+}
+export default connect(mapStateToProps, mapDispatchToProps)(Menu)

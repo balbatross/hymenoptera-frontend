@@ -5,6 +5,7 @@ import Options from './components/options';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import { connect } from 'react-redux';
 import logo from './logo.svg';
 import 'storm-react-diagrams/dist/style.min.css';
 import './App.css';
@@ -24,7 +25,7 @@ class App extends Component {
         <AppBar style={{height: '64px'}} position="static" color="default">
           <Toolbar>
             <Typography variant="title" color="inherit">
-                Hymenoptera
+                Hymenoptera: {this.props.title}
             </Typography>
           </Toolbar>
         </AppBar>
@@ -39,4 +40,11 @@ class App extends Component {
   }
 }
 
-export default App;
+function mapState(state){
+console.log("HEYYYY", state)
+  return {
+    title: state.editor.flow.name
+  }
+}
+
+export default connect(mapState)(App);
