@@ -1,3 +1,30 @@
+.editor-tabs__new{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: black;
+  color: white;
+  padding: 7px;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 20px;
+}
+.react-tabs{
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.react-tabs__tab-list{
+  background: #dfdfdf;
+  display: flex;
+}
+
+.react-tabs__tab-panel--selected{
+  display: flex !important;
+  flex: 1;
+}
+
 .run-action img{
   width: 40px;
   margin-right: 10px;

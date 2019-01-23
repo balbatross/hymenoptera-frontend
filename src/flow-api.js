@@ -12,6 +12,23 @@ export function addFlow(){
 
 }
 
+export function createFlow(flow){ 
+    return fetch(`${BASE}/api/flows`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        flow: {
+          name: flow.name,
+          flow: flow.flow,
+        }
+      })
+    }).then((r) => {
+      return r.json()
+    })
+} 
+
 export function saveFlow(flow){
   return fetch(`${BASE}/api/flows/${flow.id}`, {
     method: 'PUT',

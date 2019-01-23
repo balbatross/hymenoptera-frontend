@@ -37,7 +37,7 @@ export default class Connection extends Component {
   componentWillReceiveProps(newProps){
     if(this.props.module.id !== newProps.module.id){
       getConnectionsByModule(newProps.module.id).then((connections) => {
-        this.setState({module: newProps.module, connections: connections})
+        this.setState({module: newProps.module, connections: connections, selectConnection: newProps.value || ''})
       })
     }
     if(this.props.value !== newProps.value){
@@ -89,7 +89,8 @@ export default class Connection extends Component {
                   name: 'connection',
                   id: 'connection'
                 }}>
-                {this._renderConnections()} 
+                {this._renderConnections()}
+                <MenuItem value={"8c8496a2-929f-4c32-a530-ca2c61bb3b0d"}>User defined</MenuItem>
               </Select>
             </FormControl>
             <Button onClick={this.openEditorModal.bind(this)} color="primary" variant="contained">

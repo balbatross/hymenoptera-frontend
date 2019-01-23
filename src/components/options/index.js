@@ -6,6 +6,8 @@ import locale from 'react-json-editor-ajrm/locale/en';
 import Connections from './connection';
 import { getModules } from '../../flow-api';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import * as editorActions from '../../actions/editorActions';
 import './index.css';
 
 class Options extends Component {
@@ -45,15 +47,11 @@ class Options extends Component {
   }
 
   _handleOptionChange(id, opts){
-    if(this.props.onChange){
-      this.props.onChange(id, opts);
-    }
+    this.props.editorActions.updateNodeOptions(id, opts)
   }
 
   _handleConnectionChange(id, conn){
-    if(this.props.onConnectionChange){
-      this.props.onConnectionChange(id, conn);
-    }
+    this.props.editorActions.updateNodeConnection(id, conn)
   }
 
   _renderConnections(){
@@ -101,9 +99,25 @@ class Options extends Component {
 }
 
 function mapStateToProps(state){
+  let selected = {};
+  if(state.editor.activeTab > -1 && state.editor.selected){
+    let tab = state.editor.tabs[state.editor.activeTab]
+    if(tab.flow && tab.flow.nodes){
+      let node = tab.flow.nodes.filter((a) => a.id == state.editor.selected.id)
+      if(node.length > 0){
+        selected = node[0]
+      }
+    }
+  }
   return {
-    selectedNode: state.editor.selected
+    selectedNode: selected 
   }
 }
 
-export default connect(mapStateToProps)(Options)
+function mapDispatchToProps(dispatch){
+  return {
+    editorActions: bindActionCreators(editorActions, dispatch)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Options)

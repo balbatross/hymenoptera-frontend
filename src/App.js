@@ -25,7 +25,7 @@ class App extends Component {
         <AppBar style={{height: '64px'}} position="static" color="default">
           <Toolbar>
             <Typography variant="title" color="inherit">
-                Hymenoptera: {this.props.title}
+              Hymenoptera
             </Typography>
           </Toolbar>
         </AppBar>
@@ -43,7 +43,7 @@ class App extends Component {
 function mapState(state){
 console.log("HEYYYY", state)
   return {
-    title: state.editor.flow.name
+
   }
 }
 

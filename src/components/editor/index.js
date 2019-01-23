@@ -13,30 +13,46 @@ import {
   DefaultLinkFactory
 } from 'storm-react-diagrams';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import TextField from '@material-ui/core/TextField';
 import Options from '../options';
 import uuid from 'uuid';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as editorActions from '../../actions/editorActions';
+
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
+import FlowChart from './flow-chart';
+
 import { startFlow, stopFlow, saveFlow } from '../../flow-api';
 import './index.css';
+import 'react-tabs/style/react-tabs.css';
 
 class Editor extends Component {
   constructor(props){
     super(props);
 
     this.state = {
+      newType: '',
+      newName: '',
+      showModal: false,
       nodeSelection: {},
       selected: {},
       options: {},
       flow: {},
+      flows: [{name: "Flow 1", flow: {}}, {name: "Flow 2", flow: {}}],
       active: {}
     }
 
-    this.diagramEngine = new DiagramEngine()
-    this.diagramEngine.installDefaultFactories()
-    let model = new DiagramModel(); 
-    this.diagramEngine.setDiagramModel(model);
+    this.handleKeyDown = this.handleKeyDown.bind(this)
+    document.addEventListener('keydown', this.handleKeyDown)
   }
 
   componentWillReceiveProps(newProps){
@@ -46,41 +62,20 @@ class Editor extends Component {
       })
     }
 
-    if(this.props.flow.id !== newProps.flow.id){
-      if(newProps.flow.flow.diagram){
-        let diagramModel = new DiagramModel();
-        diagramModel.addListener({nodesUpdated: (event) => {
-          if(event.isCreated){
-           
-            let id = event.node.id;
-            event.node.addListener({selectionChanged: (s) => {
-              
-              this.nodeSelect(id, s)
-              
-            }})
-          }
-        }})
-         
-        diagramModel.deSerializeDiagram(newProps.flow.flow.diagram, this.diagramEngine)
-        this.diagramEngine.setDiagramModel(diagramModel)
-      }
+  }
+
+  handleKeyDown(event){
+    let charCode = String.fromCharCode(event.which).toLowerCase()
+    let ctrlKey = event.ctrlKey || event.metaKey
+
+    if(ctrlKey && charCode == 's'){
+      event.preventDefault()
+      this.saveActiveFlow()
     }
   }
 
-  nodeSelect(node_id, selected){
-
-    let _node = this.diagramEngine.getDiagramModel().getNode(node_id)
-    let node = _node.extras;
-    node.id = node_id
-    //if selected selectNode
-    //if node is selected unset selectedNode
-    if(selected.isSelected){
-      this.props.editorActions.selectNode(node, selected.isSelected)
-    }
-
-    if(node.id == this.props.selectedNode.id){
-      this.props.editorActions.selectNode(node, selected.isSelected)
-    }
+  saveActiveFlow(){
+    this.props.editorActions.saveActiveFlow();
   }
 
   getSelected(){
@@ -93,128 +88,16 @@ class Editor extends Component {
     }
     return null;
   }
-
-  addNode(node, pos){
-    let name = node.label;
-    let _node = new DefaultNodeModel(name, "rgb(195,255,0)")
-
-    if(!_node.id){
-      node.id = uuid.v4();
-    }else{
-      node.id = _node.id
-    }
-
-    let type = node.config.type
-    console.log(node) 
-    _node.extras = {config: node.config, module_name: node.module_name, delegator: node.delegator, opts: {}}
-    switch(type){
-      case 'input':
-        _node.addOutPort("Trigger")
-        break;
-      case 'output':
-        _node.addInPort("Stream")
-        break;
-      case 'process':
-        _node.addInPort("In")
-        _node.addOutPort("Out")
-    }
-    _node.addListener({selectionChanged: (s) => {
-      this.nodeSelect(node, s)
-    }})
-    _node.x = pos.x
-    _node.y = pos.y
-     this.diagramEngine.getDiagramModel().addNode(_node)   
-    if(this.props.onChange){
-      this.props.onChange(this.diagramEngine.getDiagramModel().serializeDiagram())
-    }
-
-    this.forceUpdate()
+  
+  getActiveFlow(){
+    let active = this.props.activeTab;
+    let tab = this.props.tabs[active]
+    return tab
   }
 
-  _handleConnChange(id, conn){
-    console.log(id, " ", conn)
-    let node = this.diagramEngine.getDiagramModel().getNode(id)
-    let extras = node.extras;
-    this.diagramEngine.getDiagramModel().getNode(id).extras = {...extras, module_inst: conn}
-    console.log(node)
-  }
-
-  _handleOptionChange(id, opts){
-    let options = this.state.options
-    options[id] = opts
-    this.setState({options: options})
-
-
-    let node = this.diagramEngine.getDiagramModel().getNode(id)
-    let extras = node.extras;
-    node.extras = {...extras, opts: opts}
-
-//    node.extras = {opts: opts}
-  }
-
-  testFlow(flow){
-    return fetch('http://localhost:8000/api/run', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-
-      },
-      body: JSON.stringify({
-        flow: flow
-      })
-    }).then((r) => {
-      return r.json()
-    });
-  }
-
-  _getActiveFlow(){
-    let chain = this._getFlow()
-    if(this.props.flow.id){
-      let flow = {
-        id: this.props.flow.id,
-        name: this.props.flow.name,
-        flow: chain
-      }
-      return flow;
-    }else{
-      return null
-    }
-  }
-
-  _getFlow(){
-    let diagram = this.diagramEngine.getDiagramModel().serializeDiagram()
-    
-    let nodes = diagram.nodes.map((x) => {
-        return {
-          id: x.id,
-          module_name: x.extras.module_name,
-          module_inst: x.extras.module_inst,
-          config: x.extras.config,
-          opts: x.extras.opts,
-          delegator: x.extras.delegator,
-          ports: x.ports
-        }
-    });
-    let links = diagram.links.map((x) => {
-      return {
-        id: x.id,
-        src: x.source,
-        dst: x.target,
-        srcPort: x.sourcePort,
-        dstPort: x.targetPort
-      }
-    })
-
-    let flow = {
-      diagram: diagram,
-      nodes: nodes,
-      links: links
-    }
-    return flow;
-  }
 
   startFlow(){
-      let flow = this._getActiveFlow()
+      let flow = this.getActiveFlow()
       console.log(this.props.flow);
       startFlow(this.props.flow).then((result) => {
         let run_id = result.result
@@ -239,20 +122,81 @@ class Editor extends Component {
     }
   }
 
+  handleTypeChange(evt){
+      this.setState({newType: evt.target.value})
+  }
+
+  createNew(){
+    let type = this.state.newType;
+    if(type && type != ''){
+      let flow = {name: this.state.newName, flow: {nodes: [], links: []}}
+      this.props.editorActions.editFlow(flow)
+      this.setState({newName: '', newType: '',  showModal: false})
+    }
+  }
+
+  _renderCreationDialog(){
+    return (
+      <Dialog open={this.state.showModal}>
+        <DialogTitle>Create new item</DialogTitle>
+        <DialogContent>
+          <FormControl fullWidth>
+            <TextField placeholder="Name" onChange={(e) => this.setState({newName: e.target.value})} value={this.state.newName}/>
+          </FormControl>
+          <FormControl fullWidth>
+            <InputLabel htmlFor='new-type'>Type</InputLabel>
+            <Select
+              value={this.state.newType}
+              onChange={this.handleTypeChange.bind(this)}
+              inputProps={{
+                name: 'new-type',
+                id: 'new-type'
+              }}>
+              <MenuItem value="flow">
+                Flow 
+              </MenuItem>
+              <MenuItem value="collection">
+                Collection
+              </MenuItem>
+              <MenuItem value="node">
+                Node
+              </MenuItem> 
+            </Select>
+          </FormControl>
+          
+        </DialogContent>
+        <DialogActions>
+          <Button color="primary" onClick={() => this.setState({showModal: false})}>Cancel</Button>
+
+          <Button color="primary" variant="contained" onClick={this.createNew.bind(this)}>Create</Button>
+        </DialogActions>
+      </Dialog>
+    )
+  }
+
   render(){
     return (
       <div className="editor">
-
-        <div className="editor-container" onDragOver={event => { 
-          event.preventDefault()
-        }} onDrop={event => {
-          var data = JSON.parse(event.dataTransfer.getData('storm-diagram-node'))
-          let point = this.diagramEngine.getRelativeMousePoint(event)
-
-          this.addNode(data, point)
-
-        }}>
-          <DiagramWidget className="srd-demo-canvas" diagramEngine={this.diagramEngine} />
+        {this._renderCreationDialog()}
+        <div className="editor-container" >
+          <Tabs selectedIndex={this.props.activeTab} onSelect={(index) => {this.props.editorActions.setActiveTab(index)}}>
+            <TabList>
+              {this.props.tabs.map((flow) => {
+                return (<Tab>{flow.name} {(flow.edited) ? '!' : null}</Tab>)
+              })}
+              <div className="editor-tabs__new" onClick={() => this.setState({showModal: true})}>+</div>
+            </TabList>
+            {this.props.tabs.map((flow, index) => {
+              console.log(flow)
+              return (
+                <TabPanel>
+                  <FlowChart flow={flow.flow} onChange={(model) => {
+                    this.props.editorActions.updateFlowDiagram(flow.id, model)
+                  }}/>
+                </TabPanel>
+              );
+            })}
+          </Tabs>
 
         </div>
         <div className="editor-toolbar" >
@@ -266,7 +210,7 @@ class Editor extends Component {
             Stop
           </Button>
         </div>
-        <Options selected={this.state.selected} options={this.state.options[this.state.selected.id] || {}} onChange={this._handleOptionChange.bind(this)} onConnectionChange={this._handleConnChange.bind(this)}/>
+        <Options />
       </div>
     );
   }
@@ -275,6 +219,8 @@ class Editor extends Component {
 function mapStateToProps(state){
   console.log(state)
   return {
+      tabs: state.editor.tabs,
+      activeTab: state.editor.activeTab,
       flow: state.editor.flow,
       selectedNode: state.editor.selected
   }
