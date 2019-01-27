@@ -57,7 +57,8 @@ class Options extends Component {
   _renderConnections(){
     if(this.props.selectedNode.config != null && this.props.selectedNode.config != {}){
       let module = this.state.modules[this.props.selectedNode.module_name]
-      let opts = module.base.opts;
+      console.log("Mod", module)
+      let opts = module.klass.opts;
 
       return (
         <Connections value={this.props.selectedNode.module_inst} module={module} onChange={(conn) => {

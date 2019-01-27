@@ -31,7 +31,7 @@ import * as editorActions from '../../actions/editorActions';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import FlowChart from './flow-chart';
 
-import { startFlow, stopFlow, saveFlow } from '../../flow-api';
+import { exportFlow, startFlow, stopFlow, saveFlow } from '../../flow-api';
 import './index.css';
 import 'react-tabs/style/react-tabs.css';
 
@@ -135,6 +135,17 @@ class Editor extends Component {
     }
   }
 
+  _exportFlow(){
+    //Export endpoint
+    this.props.editorActions.exportActiveFlow();
+    /*  let flow = this._getActiveFlow()
+    if(flow){
+      exportFlow(flow).then((r) => {
+        console.log("Export result", r)
+      })
+    }*/
+  }
+
   _renderCreationDialog(){
     return (
       <Dialog open={this.state.showModal}>
@@ -200,8 +211,8 @@ class Editor extends Component {
 
         </div>
         <div className="editor-toolbar" >
-          <Button variant="contained" onClick={this._saveFlow.bind(this)} style={{marginRight: '10px'}}>
-            Save
+          <Button variant="contained" onClick={this._exportFlow.bind(this)} style={{marginRight: '10px'}}>
+            Export
           </Button>
           <Button color="primary" variant="contained" onClick={this.startFlow.bind(this)} style={{marginRight: '10px'}}>
             RUN

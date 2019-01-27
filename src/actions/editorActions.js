@@ -1,5 +1,19 @@
 import * as types from './actionTypes';
-import { createFlow, saveFlow } from '../flow-api';
+import { exportFlow, createFlow, saveFlow } from '../flow-api';
+
+
+export function exportActiveFlow(){
+  return (dispatch, getState) => {
+    let state = getState().editor;
+    let tab = state.tabs[state.activeTab]
+
+    if(tab && tab.id){
+      exportFlow(tab).then((r) => {
+        console.log("Bundling result")
+      })
+    }
+  }
+}
 
 export function saveActiveFlow(){
   return (dispatch, getState) => {

@@ -132,7 +132,7 @@ export default class Connection extends Component {
             <DialogTitle>Create new {this.props.module.name} Connection</DialogTitle>
             <DialogContent>
               <TextField value={this.state.connection.name} onChange={(e) => this.onChange('name', e.target.value)} fullWidth placeholder="Connection Name" />
-              <JSONInput confirmGood={false} onChange={(e) => this.onChange('opts', e.jsObject)} locale={locale} placeholder={this.props.module.base.opts} height='250px' />
+              <JSONInput confirmGood={false} onChange={(e) => this.onChange('opts', e.jsObject)} locale={locale} placeholder={this.props.module.klass.opts} height='250px' />
             </DialogContent>
             <DialogActions>
               <Button color="primary" onClick={this.closeModal.bind(this)}>

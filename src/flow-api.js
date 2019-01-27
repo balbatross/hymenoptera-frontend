@@ -43,6 +43,17 @@ export function saveFlow(flow){
   })
 }
 
+export function exportFlow(flow){
+  return fetch(`${BASE}/api/flows/${flow.id}/package`,{
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  }).then((r) => {
+    return r.json();
+  })
+}
+
 export function startFlow(flow){
   return fetch(`${BASE}/api/flows/${flow.id}/run`, {
     method: 'POST',
