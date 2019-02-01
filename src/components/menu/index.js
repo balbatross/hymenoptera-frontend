@@ -8,11 +8,10 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import TextField from '@material-ui/core/TextField';
 import AppBar from '@material-ui/core/AppBar';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import Node from '../nodes'
+import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import { connect } from 'react-redux';
 import {bindActionCreators} from 'redux';
 import * as editorActions from '../../actions/editorActions';
@@ -110,15 +109,17 @@ class Menu extends Component {
   _renderMenu(){
 
     return (
-        <AppBar position="static">
-          <Tabs value={this.state.selectedOption} onChange={this._selectMenuOption.bind(this)}>
-            {this.state.menu.map((x) => {
-                return (
-                  <Tab label={x} />
-                )
-            })}
-          </Tabs>
-        </AppBar>
+        <TabList>
+          {this.state.menu.map((x) => {
+            return (
+              <Tab style={{display: 'flex', alignItems: 'center'}}>
+                <img style={{width: '20px', height: '20px', marginRight: '10px'}}  src={require(`../../assets/${x == 'Nodes' ? 'node' : 'flow'}.svg`)} />
+                {x}
+              </Tab>
+            );
+          })}
+        </TabList>
+              
     );
   }
 
@@ -221,15 +222,18 @@ class Menu extends Component {
   render(){
     return(
       <div className="flow-menu">
-        <div style={{display: 'flex', justifyContent: 'space-around', paddingTop: '5px'}}>
+        <Tabs>
           {this._renderMenu()}
-        </div>
 
-        {(this.state.selectedOption == 0) ? (
-        <ul>
-          {this._renderItems()}
-        </ul>
-        ) : this._renderFlows()}
+        <TabPanel>
+            <ul className="node-list">
+              {this._renderItems()}
+            </ul>
+        </TabPanel>
+        <TabPanel>
+          {this._renderFlows()}
+        </TabPanel>
+        </Tabs>
       </div>
     );  
   }

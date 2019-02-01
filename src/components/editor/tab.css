@@ -1,0 +1,12 @@
+.editor-tab{
+    display:flex;
+    align-items:center; 
+}
+
+.editor-tab__indicator{
+    background:green;
+    width:10px;
+    height:10px;
+    border-radius:5px;
+    margin-left: 10px;
+}

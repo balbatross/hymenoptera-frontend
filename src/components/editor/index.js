@@ -23,6 +23,7 @@ import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import TextField from '@material-ui/core/TextField';
 import Options from '../options';
+import TabContent from './tab'
 import uuid from 'uuid';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -193,7 +194,10 @@ class Editor extends Component {
           <Tabs selectedIndex={this.props.activeTab} onSelect={(index) => {this.props.editorActions.setActiveTab(index)}}>
             <TabList>
               {this.props.tabs.map((flow) => {
-                return (<Tab>{flow.name} {(flow.edited) ? '!' : null}</Tab>)
+                console.log(flow)
+                return (<Tab>
+                  <TabContent name={flow.name}/>
+                </Tab>)
               })}
               <div className="editor-tabs__new" onClick={() => this.setState({showModal: true})}>+</div>
             </TabList>
