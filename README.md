@@ -4,7 +4,7 @@ Frontend for the Hymenoptera project, you can create flows and interact with the
 
 ### Screenshot
 
-![screenshot]()
+![screenshot](https://raw.githubusercontent.com/balbatross/hymenoptera-frontend/master/demo.png)
 
 ### Set up
 
