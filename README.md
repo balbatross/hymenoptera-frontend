@@ -22,3 +22,5 @@ With a flow open in the editor click the export button, you'll need to provide a
 
 The exported flow will be made available in a local npm registry
 
+![export-dialog](https://raw.githubusercontent.com/balbatross/hymenoptera-frontend/master/export-dialog.png)
+
