@@ -1,0 +1,27 @@
+.flow-chart-container .Pane.vertical.Pane1{
+  display: flex;
+}
+.flow-chart-inspector__node-conf{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 7px;
+}
+
+.flow-chart-inspector__node-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #dfdfdf;
+}
+
+.flow-chart-inspector{
+  height: 100%;
+  background: white;
+}
+
+.flow-chart-container{
+  display: flex;
+  flex: 1;
+}

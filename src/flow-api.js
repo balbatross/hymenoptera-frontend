@@ -29,7 +29,18 @@ export function createFlow(flow){
     })
 } 
 
+
 export function saveFlow(flow){
+  let nodes = flow.flow.nodes.map((x) => {
+      let o = x.config.output;
+      if(typeof(o) == 'string'){
+        o = JSON.parse(o)
+      }
+      x.config.output = o;
+    return x
+  });
+  flow.nodes = nodes;
+  
   return fetch(`${BASE}/api/flows/${flow.id}`, {
     method: 'PUT',
     headers: {

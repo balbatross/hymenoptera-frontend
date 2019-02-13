@@ -1,4 +1,4 @@
-import { UPDATE_NODE_OPTS, UPDATE_NODE_CONN, SAVED_FLOW, UPDATE_FLOW_DIAGRAM, SET_TAB, SELECT_NODE, EDIT_FLOW } from '../actions/actionTypes';
+import { GET_MODULES, UPDATE_NODE_OPT,  UPDATE_NODE_OUTPUT, UPDATE_NODE_OPTS, UPDATE_NODE_CONN, SAVED_FLOW, UPDATE_FLOW_DIAGRAM, SET_TAB, SELECT_NODE, EDIT_FLOW } from '../actions/actionTypes';
 import initialState from './initialState';
 
 export default function editor(state = initialState.editor, action){
@@ -7,6 +7,8 @@ export default function editor(state = initialState.editor, action){
   let tab; 
 
   switch(action.type){
+    case GET_MODULES:
+      return {...state, modules: action.modules}
     case SAVED_FLOW:
       for(var i = 0; i < tabs.length; i++){
         if(tabs[i].id == action.flow.id){
@@ -14,6 +16,34 @@ export default function editor(state = initialState.editor, action){
             return {...state, tabs: tabs}
         }
       }
+    case UPDATE_NODE_OUTPUT:
+      tab = tabs[state.activeTab]
+      console.log(action, tab.flow.nodes)
+      for(var i = 0; i < tab.flow.nodes.length; i++){
+        if(tab.flow.nodes[i].id == action.id){
+          tab.flow.nodes[i].config.output = action.output
+          tab.edited = true
+          break;
+        }
+      }
+      tabs[state.activeTab] = tab
+      newState = {...state, tabs: tabs}
+      return newState;
+    case UPDATE_NODE_OPT:
+      tab = tabs[state.activeTab]
+      for(var i = 0; i < tab.flow.nodes.length; i++){
+        if(tab.flow.nodes[i].id == action.id){
+          let opts = tab.flow.nodes[i].opts
+          opts[action.key] = action.value
+          tab.edited = true
+          tab.flow.nodes[i].opts = opts
+          break
+        }
+      }
+
+      tabs[state.activeTab] = tab
+      newState = {...state, tabs: tabs}
+      return newState;
     case UPDATE_NODE_OPTS:
       tab = tabs[state.activeTab]
       console.log(tab, state.activeTab)

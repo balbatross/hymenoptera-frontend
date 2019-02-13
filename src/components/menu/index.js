@@ -38,11 +38,7 @@ class Menu extends Component {
         flows: flows
       })
     })
-    this.getModules().then((modules) => {
-      this.setState({
-        modules: modules
-      })
-    })
+    this.props.editorActions.getMainModules()
 
   }
 
@@ -183,7 +179,7 @@ class Menu extends Component {
 
     let modules = []
     console.log(this.state.modules)
-    this.state.modules.map((x) => {
+    this.props.modules.map((x) => {
       x.modules.map((mod) => {
         mod.package = x.id;
         modules.push(mod)
@@ -191,7 +187,7 @@ class Menu extends Component {
       })
     })
 //         <Node node={{title: m.package, description: m.key, config: m.config}} />
-    return this.state.modules.map((m) => {
+    return this.props.modules.map((m) => {
       return (
         <li>
           <div className="menu-module">
@@ -241,7 +237,7 @@ class Menu extends Component {
 
 function mapStateToProps(state){
   return {
-    
+    modules: state.editor.modules    
   }
 }
 

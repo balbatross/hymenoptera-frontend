@@ -1,3 +1,7 @@
+.rc-menu{
+  margin-top: 0;
+}
+
 .app-body{
   height: 100%;
   display: flex;
@@ -10,11 +14,14 @@
   background: #dfdfdf;
 }
 
+.flow-chart-container{
+  background: black;
+}
+
 html, body, #root, .App{
   height: 100vh;
   display: flex;
   flex: 1;
-  background: black;
 }
 
 .App {

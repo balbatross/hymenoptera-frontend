@@ -25,12 +25,13 @@ import TextField from '@material-ui/core/TextField';
 import Options from '../options';
 import TabContent from './tab'
 import uuid from 'uuid';
+import NodeEditor from './node-editor';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as editorActions from '../../actions/editorActions';
-
+import ActionBar from '../action-bar';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import FlowChart from './flow-chart';
+import FlowChart from './flow-editor';
 
 import { exportFlow, startFlow, stopFlow, saveFlow } from '../../flow-api';
 import './index.css';
@@ -54,6 +55,12 @@ class Editor extends Component {
 
     this.handleKeyDown = this.handleKeyDown.bind(this)
     document.addEventListener('keydown', this.handleKeyDown)
+  }
+
+  componentDidMount(){
+/*    setInterval(() => {
+      this.saveActiveFlow();
+    }, 10 * 1000)*/
   }
 
   componentWillReceiveProps(newProps){
@@ -130,7 +137,34 @@ class Editor extends Component {
   createNew(){
     let type = this.state.newType;
     if(type && type != ''){
-      let flow = {name: this.state.newName, flow: {nodes: [], links: []}}
+      let flow;
+      switch(type){
+        case 'module':
+          flow = {
+            type: 'module',
+            name: this.state.newName,
+            node: 
+`
+class ${this.state.newName} {
+  constructor(opts, instance){
+
+  }
+}
+
+module.exports = ${this.state.newName};
+
+`         }
+          break;
+        case 'flow':
+          flow = {type: 'flow', name: this.state.newName, flow: {nodes: [], links: []}}
+          break;
+        case 'collection':
+          flow = {type: 'collection', name: this.state.newName, collection: {nodes: [], links: [], model: {}}}
+          break;
+        default:
+          return;
+      }
+//      let flow = {name: this.state.newName, flow: {nodes: [], links: []}}
       this.props.editorActions.editFlow(flow)
       this.setState({newName: '', newType: '',  showModal: false})
     }
@@ -147,14 +181,35 @@ class Editor extends Component {
     }*/
   }
 
+  _renderDialogInner(){
+    let content = [(
+          <FormControl fullWidth>
+            <TextField placeholder="Name" onChange={(e) => this.setState({newName: e.target.value})} value={this.state.newName}/>
+          </FormControl>
+    )]
+    switch(this.state.newType){
+      case 'flow':
+        break;
+      case 'module':
+        content.push( (
+          <FormControl fullWidth>
+            <TextField placeholder="ID" />
+          </FormControl>
+        ))
+        break;
+      case 'collection': 
+        break;
+      default:
+        return;
+    }
+    return content;
+  }
+
   _renderCreationDialog(){
     return (
       <Dialog open={this.state.showModal}>
         <DialogTitle>Create new item</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth>
-            <TextField placeholder="Name" onChange={(e) => this.setState({newName: e.target.value})} value={this.state.newName}/>
-          </FormControl>
           <FormControl fullWidth>
             <InputLabel htmlFor='new-type'>Type</InputLabel>
             <Select
@@ -170,12 +225,12 @@ class Editor extends Component {
               <MenuItem value="collection">
                 Collection
               </MenuItem>
-              <MenuItem value="node">
-                Node
+              <MenuItem value="module">
+                Module
               </MenuItem> 
             </Select>
           </FormControl>
-          
+            {this._renderDialogInner()}
         </DialogContent>
         <DialogActions>
           <Button color="primary" onClick={() => this.setState({showModal: false})}>Cancel</Button>
@@ -186,46 +241,52 @@ class Editor extends Component {
     )
   }
 
+  _renderTabHeaders(){
+    return (
+        <TabList>
+          {this.props.tabs.map((flow) => {
+            return (<Tab>
+              <TabContent name={flow.name}/>
+            </Tab>)
+          })}
+          <div className="editor-tabs__new" onClick={() => this.setState({showModal: true})}>+</div>
+        </TabList>
+    );
+  }
+
+  _renderTab(flow){
+    if(flow.type == "module"){
+      return (
+        <NodeEditor module={flow.node} />
+      );
+    }else{
+      return (<FlowChart flow={flow.flow} onChange={(model) => {
+        this.props.editorActions.updateFlowDiagram(flow.id, model)
+      }} />); 
+    }
+  }
+
+  _renderTabs(){
+    return this.props.tabs.map((flow, index) => { 
+        return (
+          <TabPanel>
+            {this._renderTab(flow)}
+          </TabPanel>
+        );
+    })
+  }
+
   render(){
     return (
       <div className="editor">
         {this._renderCreationDialog()}
+      <Tabs selectedIndex={this.props.activeTab} onSelect={(index) => {this.props.editorActions.setActiveTab(index)}}>
+        {this._renderTabHeaders()}
         <div className="editor-container" >
-          <Tabs selectedIndex={this.props.activeTab} onSelect={(index) => {this.props.editorActions.setActiveTab(index)}}>
-            <TabList>
-              {this.props.tabs.map((flow) => {
-                console.log(flow)
-                return (<Tab>
-                  <TabContent name={flow.name}/>
-                </Tab>)
-              })}
-              <div className="editor-tabs__new" onClick={() => this.setState({showModal: true})}>+</div>
-            </TabList>
-            {this.props.tabs.map((flow, index) => {
-              console.log(flow)
-              return (
-                <TabPanel>
-                  <FlowChart flow={flow.flow} onChange={(model) => {
-                    this.props.editorActions.updateFlowDiagram(flow.id, model)
-                  }}/>
-                </TabPanel>
-              );
-            })}
-          </Tabs>
-
+          {this._renderTabs()}
         </div>
-        <div className="editor-toolbar" >
-          <Button variant="contained" onClick={this._exportFlow.bind(this)} style={{marginRight: '10px'}}>
-            Export
-          </Button>
-          <Button color="primary" variant="contained" onClick={this.startFlow.bind(this)} style={{marginRight: '10px'}}>
-            RUN
-          </Button>
-          <Button color="primary" variant="contained" onClick={this.stopFlow.bind(this)}>
-            Stop
-          </Button>
-        </div>
-        <Options />
+       </Tabs>
+        <ActionBar flow={this.props.tabs[this.props.activeTab]}/>
       </div>
     );
   }

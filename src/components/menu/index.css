@@ -62,10 +62,10 @@
   display: flex;
   flex: 1; 
   background: white;
-  padding-left: 5px;
-  padding-right: 5px;
+
+ 
   flex-direction: column;
 }
 
-.flow-menu .node-list{list-style:none;padding:0;}
+.flow-menu .node-list{list-style:none;padding:0; padding-left: 5px; padding-right: 5px;}
 .flow-menu .node-list>li{margin-top:5px;}

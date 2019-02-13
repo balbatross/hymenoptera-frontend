@@ -1,6 +1,14 @@
 import * as types from './actionTypes';
-import { exportFlow, createFlow, saveFlow } from '../flow-api';
+import { getModules, exportFlow, createFlow, saveFlow } from '../flow-api';
 
+
+export function getMainModules(){
+  return (dispatch) => {
+    getModules().then((modules) => {
+      return dispatch({type: types.GET_MODULES, modules: modules})
+    })
+  }
+}
 
 export function exportActiveFlow(){
   return (dispatch, getState) => {
@@ -57,6 +65,18 @@ export function editFlow(flow){
 export function updateNodeOptions(id, options){
   return dispatch => {
     return dispatch({type: types.UPDATE_NODE_OPTS, options: options, id: id})
+  }
+}
+
+export function updateNodeOption(id, key, value){
+  return dispatch =>{ 
+    return dispatch({type: types.UPDATE_NODE_OPT, key: key, value: value, id: id})
+  } 
+}
+
+export function updateNodeOutput(id, output){
+  return dispatch => {
+    return dispatch({type: types.UPDATE_NODE_OUTPUT, output: output, id: id})
   }
 }
 
