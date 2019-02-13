@@ -16,3 +16,9 @@ Run `node src/http.js`
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
+### Exporting flow
+
+With a flow open in the editor click the export button, you'll need to provide a version number each release
+
+The exported flow will be made available in a local npm registry
+
