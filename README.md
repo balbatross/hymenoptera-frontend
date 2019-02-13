@@ -1,4 +1,4 @@
-## Hymenoptera Flow Editor 
+## Hymenoptera Flow Editor
 
 Frontend for the Hymenoptera project, you can create flows and interact with the flow engine from here
 
@@ -15,6 +15,34 @@ Install the required node modules
 Run `node src/http.js`
 
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+
+### Message passing
+
+A node has an output object that can be configured so at runtime data can be validated and passed over links.
+
+An autocompletion feature is provided in the editor that does deep inspection of the output format to provide easier linkage
+
+#### Example
+
+Output
+
+`
+{
+  "result": {
+    "id": "string",
+    "message": "object"
+  }
+}
+`
+
+Input 
+
+`
+{
+  "id": $it.result.id,
+  "message": $it.result.message.key
+}
+`
 
 ### Exporting flow
 
