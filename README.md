@@ -2,6 +2,10 @@
 
 Frontend for the Hymenoptera project, you can create flows and interact with the flow engine from here
 
+### Screenshot
+
+![screenshot]()
+
 ### Set up
 
 Clone the repository `https://github.com/balbatross/hymenoptera-frontend`
